@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django_prometheus.models import ExportModelOperationsMixin
 
 from apps.core.models import AbstractBaseModel
 from config.storage_backends import PublicMediaStorage
@@ -20,7 +21,7 @@ class Tag(models.Model):
         return self.name
 
 
-class Event(AbstractBaseModel):
+class Event(ExportModelOperationsMixin("Event"), AbstractBaseModel):
     class EventStatus(models.TextChoices):
         PENDING = "PENDING", "Pending"
         ACTIVE = "ACTIVE", "Active"
