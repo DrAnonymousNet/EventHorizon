@@ -67,7 +67,6 @@ class EventAttendance(models.Model):
     )
     unregistered_user_email = models.EmailField(max_length=255, blank=True, null=True)
     attendance_type = models.CharField(max_length=100, choices=AttendanceType.choices)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("event", "registered_user", "unregistered_user_email")
