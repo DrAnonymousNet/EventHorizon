@@ -56,9 +56,7 @@ class EventAttendance(models.Model):
         INTERESTED = "INTERESTED", "Interested"
         REGISTERED = "REGISTERED", "Registered"
 
-    event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, related_name="attendances"
-    )
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="attendees")
     registered_user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
