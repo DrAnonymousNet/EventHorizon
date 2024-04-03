@@ -1,5 +1,7 @@
 import environ
 
+from .logging import *
+
 BASE_DIR = environ.Path(__file__) - 3  # noqa F405
 APPS_DIR = BASE_DIR.path("apps")
 env = environ.Env()  # noqa F405
