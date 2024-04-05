@@ -14,7 +14,7 @@ type DeliveryMethod struct {
 	Email           bool
 	SMS             bool
 	PushNotification bool
-	Webhook         bool
+	//Webhook         bool
 }
 
 type DeliveryDetails struct {
@@ -23,8 +23,8 @@ type DeliveryDetails struct {
 	SenderEmail     string
 	PhoneNumbers    []string
 	DeviceTokens    []string // For push notifications
-	WebhookURL      string
-	WebhookSecret   string // Optional, for webhook verification
+	//WebhookURL      string
+	//WebhookSecret   string // Optional, for webhook verification
 }
 
 type Placeholder struct {
