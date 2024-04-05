@@ -12,6 +12,7 @@ message NotifyRequest{
     string subject = 2;
     string recipients = 3;
     repeated PlaceHolders placeholders = 4;
+    string message_type = 5;
 }
 
 message NotifyResponse{

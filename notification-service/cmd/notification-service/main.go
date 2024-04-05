@@ -8,6 +8,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/dranonymousnet/eventhorizon/api/v1/notifier"
+	"github.com/dranonymousnet/eventhorizon/internal/config"
+	"github.com/dranonymousnet/eventhorizon/internal/store"
 )
 
 type NotifierServer struct {
@@ -17,6 +19,11 @@ type NotifierServer struct {
 
 func (NotifierServer) 	Notify(context.Context, *notifier.NotifyRequest) (*notifier.NotifyResponse, error){
 	return &notifier.NotifyResponse{}, nil
+}
+
+func init(){
+	config.Setup()
+	store.InitRedis()
 }
 
 func main() {
