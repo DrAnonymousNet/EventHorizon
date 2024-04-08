@@ -56,5 +56,8 @@ urlpatterns = [
     re_path(
         r"^api/(?P<version>(v1|v2))/", include("config.api_router", namespace="v1")
     ),
-    path("", include("django_prometheus.urls")),
-]
+    path("__debug__/", include("debug_toolbar.urls")),
+    
+
+    #path("", include("django_prometheus.urls")),
+] + swagger #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

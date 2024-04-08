@@ -24,20 +24,20 @@ if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR.path(".env")))
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("DJANGO_SECRET")
+SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 TEST = env.bool("DJANGO_TEST", default=False)
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = "account.User"
 
 # Application definition
 
@@ -50,9 +50,9 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework", "django_prometheus"]
+THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "djoser"]# "django_prometheus"]
 
-LOCAL_APPS = ["apps.core", "apps.event"]
+LOCAL_APPS = ["apps.core", "apps.event", "apps.account"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -93,17 +93,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -139,11 +128,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(BASE_DIR("static"))
+STATIC_ROOT = str(BASE_DIR.path("static"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
@@ -165,7 +154,7 @@ MEDIA_ROOT = str(APPS_DIR("media"))
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+from rest_framework.pagination import PageNumberPagination
 API_DEFAULT_VERSION = "v1"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -174,6 +163,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "NON_FIELD_ERRORS_KEY": "details",
     "PAGE_SIZE": 100,
+    "DEFAULT_PAGINATION_CLASS":"rest_framework.pagination.PageNumberPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "ALLOWED_VERSIONS": (API_DEFAULT_VERSION,),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
@@ -237,11 +227,36 @@ EMAIL_SUBJECT_PREFIX = env("DJANGO_EMAIL_SUBJECT_PREFIX", default=" ")
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///recpeep")}
+DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///event_service")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
-DATABASES["default"]["ENGINE"] = "django_prometheus.db.backends.postgresql"
+#DATABASES["default"]["ENGINE"] = #"django_prometheus.db.backends.postgresql"
 
 # PROMETEUS
 
 PROMETHEUS_METRICS_EXPORT_PORT = os.getenv("PROMETHEUS_METRICS_EXPORT_PORT", "8001")
 PROMETHEUS_LATENCY_BUCKETS = [0.1, 0.3, 0.9, 2.7, 8.1] + [float("inf")]
+
+
+# Djoser
+
+
+DJOSER = {
+    'TOKEN_MODEL': "rest_framework.authtoken.models.Token",
+    "LOGIN_FIELD": "email",
+    "SEND_CONFIRMATION_EMAIL": False,
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "PASSWORD_RESET_RETYPE": True,
+    "USERNAME_RESET_CONFIRM_URL": "email/reset/{uid}/{token}",
+    "USERNAME_RESET_CONFIRM_URL": "email/reset/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/{uid}/{token}",
+    "SEND_ACTIVATION_EMAIL": False,
+    "SERIALIZERS":{
+        'user_create': 'apps.account.api.serializers.UserCreateSerializer',
+        'user_create_password_retype': 'apps.account.api.serializers.UserCreatePasswordRetypeSerializer',
+
+    }
+}
+
+API_NAME = env.str("API_NAME", "eventhorizon")
+API_DESCRIPTION=env.str("API_DESCRIPTION" ,"Event Horizon Event Service")
+API_TERM_CONDITION=env.str("API_TERM_CONDITION", "TandC")

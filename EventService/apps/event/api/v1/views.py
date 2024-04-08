@@ -10,7 +10,7 @@ from drf_yasg.utils import swagger_auto_schema
 class EventAPIViewSet(ModelViewSet):
     serializer_class = EventFullSerializer
     queryset = Event.objects.all()
-    permission_classes = IsAuthenticatedOrReadOnly
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
     serializer_class = EventFullSerializer
     lookup_field = "uid"
 
@@ -22,17 +22,9 @@ class EventAPIViewSet(ModelViewSet):
     
     @swagger_auto_schema(
         
-        responses={200: {
-            "msg":"You have rsvp successfuly",
-            "data":EventAttendanceSerializer()
-        },
-        400:{
-            "msg":"validation failed",
-            "data":[]
-        }
-        },
+        responses={200: EventAttendanceSerializer()}
     )
-    @action(methods=["post"], url_path="rsvp")
+    @action(methods=["post"], url_path="rsvp", detail=True )
     def rsvp(self, request, *args, **kwargs):
         serializer = EventAttendanceSerializer(data=request.data)
         if not serializer.is_valid():

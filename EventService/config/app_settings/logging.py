@@ -69,16 +69,10 @@ LOGGING = {
             "foreign_pre_chain": foreign_pre_chain,
         },
     },
-    "filters": {
-        "filter_statsd": {
-            "()": "posthog.settings.logs.FilterStatsd",
-        }
-    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": LOGGING_FORMATTER_NAME,
-            "filters": ["filter_statsd"],
         },
         "null": {
             "class": "logging.NullHandler",

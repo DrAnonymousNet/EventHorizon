@@ -1,10 +1,12 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 
 from apps.core.models import AbstractBaseModel
 from config.storage_backends import PublicMediaStorage
 
+
+User = get_user_model()
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -49,7 +51,7 @@ class Event(ExportModelOperationsMixin("Event"), AbstractBaseModel):
         return self.title
 
 
-class EventAttendance(models.Model):
+class EventAttendance(AbstractBaseModel):
     class AttendanceType(models.TextChoices):
         PHYSICAL = "PHYSICAL", "Physical"
         VIRTUAL = "VIRTUAL", "Virtual"

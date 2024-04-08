@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include
-from django.urls import path
+from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 if settings.DEBUG:
@@ -13,4 +13,6 @@ urlpatterns = router.urls
 
 urlpatterns += [
     path("", include("apps.event.api.urls")),
+    re_path(r'^auth/', include('djoser.urls')),
+
 ]

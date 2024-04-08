@@ -23,7 +23,7 @@ class EventImageSerializer(RelationSerializerMixin, ModelSerializer):
         fields = (
             "uid",
             "created",
-            "updated",
+            "modified",
             "event",
             "caption",
             "image",
@@ -38,7 +38,7 @@ class EventAttendanceSerializer(RelationSerializerMixin, ModelSerializer):
         fields = [
             "uid",
             "created",
-            "updated",
+            "modified",
             "event",
             "unregistered_user_email",
             "registered_user",
@@ -55,6 +55,7 @@ class EventFullSerializer(ModelSerializer):
     attendees = EventAttendanceSerializer(many=True, read_only=True)
 
     class Meta:
+        model = Event
         fields = [
             "uid",
             "title",
@@ -70,12 +71,13 @@ class EventFullSerializer(ModelSerializer):
             "is_virtual",
             "virtual_meeting_link",
             "status",
+            "images"
         ]
-        extra_kwargs = {"organizer": {"source": "email"}}
 
 
 class EventMinimalSerializer(ModelSerializer):
     class Meta:
+        model = Event
         fields = [
             "title",
             "description",
