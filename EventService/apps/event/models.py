@@ -1,29 +1,16 @@
-from django.contrib.auth import get_user_model
-from django.db import models
-from django_prometheus.models import ExportModelOperationsMixin
-
 from apps.core.models import AbstractBaseModel
 from config.storage_backends import PublicMediaStorage
+from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
+
+# from django_prometheus.models import ExportModelOperationsMixin
 
 
 User = get_user_model()
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
 
-    def __str__(self):
-        return self.name
-
-
-class Tag(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class Event(ExportModelOperationsMixin("Event"), AbstractBaseModel):
+class Event(AbstractBaseModel):
     class EventStatus(models.TextChoices):
         PENDING = "PENDING", "Pending"
         ACTIVE = "ACTIVE", "Active"
@@ -38,8 +25,6 @@ class Event(ExportModelOperationsMixin("Event"), AbstractBaseModel):
     location = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    categories = models.ManyToManyField(Category, related_name="events", blank=True)
-    tags = models.ManyToManyField(Tag, related_name="events", blank=True)
     max_participants = models.IntegerField(blank=True, null=True)
     is_virtual = models.BooleanField(default=False)
     virtual_meeting_link = models.URLField(blank=True, null=True)
@@ -67,7 +52,9 @@ class EventAttendance(AbstractBaseModel):
         related_name="event_attendances",
     )
     unregistered_user_email = models.EmailField(max_length=255, blank=True, null=True)
-    attendance_type = models.CharField(max_length=100, choices=AttendanceType.choices)
+    attendance_type = ArrayField(
+        models.CharField(max_length=100, choices=AttendanceType.choices), default=list
+    )
 
     class Meta:
         unique_together = ("event", "registered_user", "unregistered_user_email")
@@ -81,9 +68,11 @@ class EventAttendance(AbstractBaseModel):
 
     def __str__(self):
         if self.registered_user:
-            return f"{self.registered_user.username} - {self.event.title} - {self.attendance_type}"
+            return f"{self.registered_user.username}\
+            - {self.event.title} - {self.attendance_type}"
         else:
-            return f"Unregistered: {self.unregistered_user_email} - {self.event.title} - {self.attendance_type}"
+            return f"Unregistered: {self.unregistered_user_email} \
+            - {self.event.title} - {self.attendance_type}"
 
 
 class EventImage(AbstractBaseModel):
@@ -92,4 +81,5 @@ class EventImage(AbstractBaseModel):
     caption = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"Image for {self.event.title} - {self.caption or 'No Caption'}"
+        return f"Image for {self.event.title} - \
+        {self.caption or 'No Caption'}"
