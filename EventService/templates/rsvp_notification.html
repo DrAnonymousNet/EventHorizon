@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            font-size: 20px;
+            color: #444;
+        }
+        .info {
+            margin-top: 20px;
+        }
+        .info p {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">New RSVP Notification</div>
+        <div class="info">
+            <p>Dear {{ organizer.name }},</p>
+            <p>You have a new RSVP for the event:</p>
+            <p><strong>Event:</strong> {{ event.name }}</p>
+            <p><strong>Participant Name:</strong> {{ attendee.name }}</p>
+            <p><strong>Participant Email:</strong> {{ attendee.email }}</p>
+            <p><strong>Date:</strong> {{ event.start_time|date:"F j, Y"}}</p>
+            <h2>Types of Attendance:</h2>
+            <ul>
+                {% for type in attendee.attendance_type %}
+                    <li>{{ type }}</li>
+                {% endfor %}
+            </ul>
+            <p>We recommend that you reach out to the participant to confirm their attendance and provide any additional information necessary.</p>
+            <p>Thank you for using our platform.</p>
+            <p>Sincerely,<br>Your Event Management Team</p>
+        </div>
+    </div>
+</body>
+</html>

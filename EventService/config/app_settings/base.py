@@ -25,7 +25,6 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(BASE_DIR.path(".env")))
 
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -50,7 +49,12 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "djoser"]# "django_prometheus"]
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "drf_yasg",
+    "djoser",
+    "rest_framework.authtoken",
+]  # "django_prometheus"]
 
 LOCAL_APPS = ["apps.core", "apps.event", "apps.account"]
 
@@ -58,7 +62,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 
 MIDDLEWARE = [
-    "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    # "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -66,7 +70,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_prometheus.middleware.PrometheusAfterMiddleware",
+    # "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 # URLS
@@ -154,7 +158,6 @@ MEDIA_ROOT = str(APPS_DIR("media"))
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-from rest_framework.pagination import PageNumberPagination
 API_DEFAULT_VERSION = "v1"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -163,7 +166,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "NON_FIELD_ERRORS_KEY": "details",
     "PAGE_SIZE": 100,
-    "DEFAULT_PAGINATION_CLASS":"rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "ALLOWED_VERSIONS": (API_DEFAULT_VERSION,),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
@@ -229,7 +232,7 @@ EMAIL_SUBJECT_PREFIX = env("DJANGO_EMAIL_SUBJECT_PREFIX", default=" ")
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///event_service")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
-#DATABASES["default"]["ENGINE"] = #"django_prometheus.db.backends.postgresql"
+# DATABASES["default"]["ENGINE"] = #"django_prometheus.db.backends.postgresql"
 
 # PROMETEUS
 
@@ -241,7 +244,7 @@ PROMETHEUS_LATENCY_BUCKETS = [0.1, 0.3, 0.9, 2.7, 8.1] + [float("inf")]
 
 
 DJOSER = {
-    'TOKEN_MODEL': "rest_framework.authtoken.models.Token",
+    "TOKEN_MODEL": "rest_framework.authtoken.models.Token",
     "LOGIN_FIELD": "email",
     "SEND_CONFIRMATION_EMAIL": False,
     "USER_CREATE_PASSWORD_RETYPE": True,
@@ -250,13 +253,24 @@ DJOSER = {
     "USERNAME_RESET_CONFIRM_URL": "email/reset/{uid}/{token}",
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/{uid}/{token}",
     "SEND_ACTIVATION_EMAIL": False,
-    "SERIALIZERS":{
-        'user_create': 'apps.account.api.serializers.UserCreateSerializer',
-        'user_create_password_retype': 'apps.account.api.serializers.UserCreatePasswordRetypeSerializer',
-
-    }
+    "SERIALIZERS": {
+        "user_create": "apps.account.api.v1.serializers.UserCreateSerializer",
+        "user_create_password_retype": "apps.account.api.v1.serializers.UserCreatePasswordRetypeSerializer",
+    },
 }
 
 API_NAME = env.str("API_NAME", "eventhorizon")
-API_DESCRIPTION=env.str("API_DESCRIPTION" ,"Event Horizon Event Service")
-API_TERM_CONDITION=env.str("API_TERM_CONDITION", "TandC")
+API_DESCRIPTION = env.str("API_DESCRIPTION", "Event Horizon Event Service")
+API_TERM_CONDITION = env.str("API_TERM_CONDITION", "TandC")
+API_DEFAULT_VERSION = env.str("API_DEFAULT_VERSION", "v1")
+
+
+# RABBITMQ
+
+RBMQ_HOST = env.str("RBMQ_HOST", "localhost")
+RBMQ_PORT = env.str("RBMQ_PORT", "5672")
+
+
+NOTIFICATION_SERVICE_ENDPOINT = env.str(
+    "NOTIFICATION_SERVICE_ENDPOINT", "localhost:8080"
+)

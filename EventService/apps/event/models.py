@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from apps.core.models import AbstractBaseModel
 from config.storage_backends import PublicMediaStorage
 from django.contrib.auth import get_user_model
@@ -43,6 +45,7 @@ class EventAttendance(AbstractBaseModel):
         INTERESTED = "INTERESTED", "Interested"
         REGISTERED = "REGISTERED", "Registered"
 
+    name = models.CharField(max_length=255, blank=True, null=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="attendees")
     registered_user = models.ForeignKey(
         User,
@@ -73,6 +76,13 @@ class EventAttendance(AbstractBaseModel):
         else:
             return f"Unregistered: {self.unregistered_user_email} \
             - {self.event.title} - {self.attendance_type}"
+
+    @cached_property
+    def email(self):
+        if self.registered_user:
+            return self.registered_user.email
+        else:
+            self.unregistered_user_email
 
 
 class EventImage(AbstractBaseModel):

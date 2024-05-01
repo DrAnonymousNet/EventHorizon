@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { background-color: #f4f4f4; padding: 20px; text-align: center; }
+        .content { margin: 20px; padding: 20px; }
+        .footer { background-color: #eeeeee; padding: 10px; text-align: center; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Update: {{ event_name }}</h1>
+    </div>
+    <div class="content">
+        <p>Hello {{ participant_name }},</p>
+        <p>We are writing to inform you of some important updates regarding the upcoming event, <strong>{{ event_name }}</strong>, scheduled for {{ original_event_date }}. Please review the new details below:</p>
+
+        <h3>Updated Event Details:</h3>
+        <ul>
+            <li><strong>New Date/Time:</strong> {{ updated_event_date }} at {{ updated_event_time }}</li>
+            <li><strong>New Location:</strong> {{ updated_event_venue }}</li>
+            <li><strong>Additional Notes:</strong> {{ additional_notes }}</li>
+        </ul>
+
+        <p>We apologize for any inconvenience these changes may cause and appreciate your understanding. Here’s what you can expect going forward:</p>
+
+        <ul>
+            <li>Updated registration details, if necessary.</li>
+            <li>Further communications closer to the event date.</li>
+        </ul>
+
+        <p>If you have any questions or need further assistance, please don’t hesitate to contact us at {{ organizer_email }} or {{ organizer_phone }}. We are here to help!</p>
+
+        <p>Thank you for your attention to these updates, and we look forward to your participation at {{ event_name }}.</p>
+
+        <p>Kind regards,</p>
+        <p>{{ organizer_name }}</p>
+    </div>
+    <div class="footer">
+        <p>Connect with us on:</p>
+        <p>{{ social_media_links }}</p>
+        <p><a href="{{ unsubscribe_link }}">Unsubscribe</a> | <a href="{{ update_preferences_link }}">Update Preferences</a></p>
+    </div>
+</body>
+</html>

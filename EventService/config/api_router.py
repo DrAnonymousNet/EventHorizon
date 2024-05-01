@@ -13,6 +13,6 @@ urlpatterns = router.urls
 
 urlpatterns += [
     path("", include("apps.event.api.urls")),
-    re_path(r'^auth/', include('djoser.urls')),
-
+    re_path(r"^auth/", include("djoser.urls")),
+    re_path(r"^auth/", include("djoser.urls.authtoken")),
 ]

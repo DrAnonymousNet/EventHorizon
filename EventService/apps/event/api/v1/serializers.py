@@ -32,6 +32,7 @@ class EventAttendanceSerializer(RelationSerializerMixin, serializers.ModelSerial
         model = EventAttendance
         fields = [
             "uid",
+            "name",
             "created",
             "modified",
             "event",

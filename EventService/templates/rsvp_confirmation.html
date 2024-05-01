@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { background-color: #f2f2f2; padding: 20px; text-align: center; }
+        .content { margin: 20px; padding: 20px; }
+        .footer { background-color: #dddddd; padding: 10px; text-align: center; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Event Reminder: {{ event.title }}</h1>
+    </div>
+    <div class="content">
+        <p>Hello {{ recipient_name }},</p>
+        <p>Just a friendly reminder that you are registered to attend {{ event.title }}! We're excited to see you there and look forward to an engaging and informative session.</p>
+        <p><strong>Event Details:</strong></p>
+        <ul>
+            <li><strong>Date:</strong> {{ event.start_time|date:"F j, Y"}}</li>
+            <li><strong>Time:</strong> {{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</li>
+            {% if event.is_virtual %}
+            <li><strong>Event link:</strong> <a href="{{ event.virtual_meeting_link }}">{{ event.virtual_meeting_link }}</a></li>
+            {% else %}
+            <li><strong>Location:</strong> {{ event.location }}</li>
+            {% endif %}
+            <li><strong>Agenda:</strong> {{ event.description }}</li>
+        </ul>
+        <p>Please arrive on time to ensure you don’t miss any part of the event. Here are a few things to keep in mind:</p>
+
+        <p>If you have any questions or need to contact us, please don’t hesitate to reach out at {{ organizer.email }}{% if organizer.phone_number %} or {{ organizer.phone_number }}{% endif %}.</p>
+        <p>Looking forward to seeing you!</p>
+        <p>Warm regards,</p>
+        <p>{{ organizer.first_name }}</p>
+    </div>
+    <div class="footer">
+        <p>Connect with us:</p>
+        <!-- Ensure social media links are actual links if possible -->
+        <p>[Social Media Links]</p>
+        <p><a href="{{ unsubscribe_link }}">Unsubscribe</a> | <a href="{{ update_preferences_link }}">Update Preferences</a></p>
+    </div>
+</body>
+</html>

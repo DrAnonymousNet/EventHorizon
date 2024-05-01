@@ -6,13 +6,14 @@ from apps.event.api.v1.serializers import (
     EventMinimalSerializer,
     EventRSVPSerializer,
 )
+from apps.event.business_layer import send_rsvp_message_to_notification_service
 from apps.event.models import Event
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -62,7 +63,13 @@ class EventAPIViewSet(ResponseViewMixin, ModelViewSet):
     @swagger_auto_schema(
         request_body=EventRSVPSerializer(), responses={200: EventAttendanceSerializer()}
     )
-    @action(methods=["post"], url_path="rsvp", detail=True)
+    @action(
+        methods=["post"],
+        url_path="rsvp",
+        detail=True,
+        authentication_classes=[],
+        permission_classes=[AllowAny],
+    )
     def rsvp(self, request, *args, **kwargs):
         event = self.get_object()
         serializer = EventRSVPSerializer(
@@ -73,7 +80,8 @@ class EventAPIViewSet(ResponseViewMixin, ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
                 data={"msg": "validation failed", **serializer.errors},
             )
-        serializer.rsvp()
+        event_attendee = serializer.rsvp()
+        send_rsvp_message_to_notification_service(event, event_attendee)
         return Response(
             status=status.HTTP_200_OK,
             data={"msg": "You have rsvp successfuly", **serializer.data},

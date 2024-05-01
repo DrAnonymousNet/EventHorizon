@@ -1,0 +1,5 @@
+RSVP_CONFIRMATION_TO_ATTENDEE = "rsvp_confirmation_to_attendee"
+EMAIL = "email"
+SMS = "sms"
+PUSH_NOTIFICATION = "notification"
+RSVP_NOTIFICATION_TO_ORGANIZER = "rsvp_notification_to_organizer"
