@@ -23,7 +23,7 @@ func NewSMTPEmailSender() *SMTPEmailSender {
 	}
 }
 
-func (s *SMTPEmailSender) SendEmail(email Email) error {
+func (s *SMTPEmailSender) SendEmail(email *Email) error {
 	auth := smtp.PlainAuth("", s.Server.From, s.Server.PassWord, s.Server.Host)
 	err := smtp.SendMail(s.Server.Host+":"+s.Server.Port, auth, s.Server.From, email.To, []byte(email.Body))
 	if err != nil {
@@ -42,11 +42,11 @@ func (s *SMTPEmailSender) SendEmailWithAttachment(email Email) error {
 	// Create a new multipart writer for the email body
 	var emailBody bytes.Buffer
 	writer := multipart.NewWriter(&emailBody)
-	
+
 	// Add CC and BCC recipients to the list of recipients for smtp.SendMail
     // Note: BCC recipients are not added to the email headers to keep them hidden
     recipients := append(email.To, email.Cc...)
-    recipients = append(recipients, email.Bcc...) 
+    recipients = append(recipients, email.Bcc...)
 
 	// Write the headers
 	headers := map[string]string{
@@ -94,7 +94,7 @@ func (s *SMTPEmailSender) SendEmailWithAttachment(email Email) error {
 		if err != nil {
 			return err
 		}
-				
+
 		base64Encoder := base64.NewEncoder(base64.StdEncoding, attachmentPart)
 		base64Encoder.Write(attachmentBytes)
 		base64Encoder.Close()

@@ -18,10 +18,9 @@ func NewConsoleEmailSender() *ConsoleEmailSender {
 }
 
 // SendEmail writes the email details to the console in a thread-safe way
-func (ces *ConsoleEmailSender) SendEmail(email Email) error {
+func (ces *ConsoleEmailSender) SendEmail(email *Email) error {
 	ces.lock.Lock()
 	defer ces.lock.Unlock()
-
 	// Simulate writing the email message to the console
 	fmt.Printf("From: %s\n", email.From)
 	fmt.Printf("To: %s\n", email.To)

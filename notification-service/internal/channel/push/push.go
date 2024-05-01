@@ -2,7 +2,7 @@ package notifier
 
 import (
 	"github.com/dranonymousnet/eventhorizon/internal/config"
-	"github.com/dranonymousnet/eventhorizon/internal/notifier/push/backends"
+	"github.com/dranonymousnet/eventhorizon/internal/channel/push/backends"
 )
 
 func GetPushNotificationSender() backends.PushNotificationSender {

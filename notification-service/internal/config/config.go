@@ -31,6 +31,7 @@ type Database struct {
 	User        string
 	Password    string
 	Host        string
+	Port 	string
 	Name        string
 	TablePrefix string
 }
@@ -43,9 +44,20 @@ type Redis struct {
 	MaxIdle     int
 	MaxActive   int
 	IdleTimeout time.Duration
+	DB int
 }
 
+
 var RedisSetting = &Redis{}
+
+type RabbitMQ struct {
+	Username string
+	Password string
+	Host string
+	Port string
+}
+
+var RabbitMQSettings = &RabbitMQ{}
 
 type SMTPServer struct {
 	From     string
@@ -61,7 +73,7 @@ var cfg *ini.File
 // Setup initialize the configuration instance
 func Setup() {
 	var err error
-	cfg, err = ini.Load("config/app.ini")
+	cfg, err = ini.Load("app.ini")
 	if err != nil {
 		log.Fatalf("setting.Setup, fail to parse 'config/app.ini': %v", err)
 	}
@@ -71,6 +83,7 @@ func Setup() {
 	mapTo("database", DatabaseSetting)
 	mapTo("smtp", SmtpSetting)
 	mapTo("redis", RedisSetting)
+	mapTo("rabbitmq", RabbitMQSettings)
 
 	// AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 	// ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second

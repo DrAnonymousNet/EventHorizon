@@ -4,50 +4,78 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 
 	"github.com/dranonymousnet/eventhorizon/internal/config"
 )
 
-
 var rdb *redis.Client
 
 func InitRedis() {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:    config.RedisSetting.Host,
-		Password: config.RedisSetting.Password,
-		DB:       0,               // Use the default DB
+	if rdb != nil {
+		log.Println("Redis is already initialized")
+		return // Early return if Redis is already initialized
+	}
+
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     config.RedisSetting.Host,     // e.g., "localhost:6379"
+		Password: config.RedisSetting.Password, // e.g., "" (no password)
+		DB:       config.RedisSetting.DB,       // e.g., 0 (default DB)
 	})
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-    // Check the connection
-    ctx := context.Background()
-    _, err := rdb.Ping(ctx).Result()
-    if err != nil {
-        log.Fatalf("Failed to connect to Redis: %v", err)
-    }
+	_, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Printf("Failed to connect to Redis: %v", err)
+		rdb = nil // Ensure rdb is nil to avoid using an uninitialized client
+		return
+	}
+
+	log.Println("Redis connected")
 }
 
+func CloseRedisConn() {
+	if rdb == nil {
+		log.Println("Redis connection is not established")
+		return
+	}
+	if err := rdb.Close(); err != nil {
+		log.Printf("Error closing Redis connection: %v", err)
+	}
+}
 
-var ctx = context.Background()
-
-func main() {
-	// Create a new Redis client.
-
-	// Example of setting a value with expiration
-	err := rdb.Set(ctx, "key", "value", 0).Err() // Use 0 for no expiration, or a duration like time.Second*10 for 10 seconds
-	if err != nil {
-		log.Fatalf("Error setting value in Redis: %v", err)
+func GetFromCache(key string) (string, error) {
+	if rdb == nil {
+		return "", fmt.Errorf("redis is not initialized")
 	}
 
-	// Example of getting a value
-	val, err := rdb.Get(ctx, "key").Result()
-	if err != nil {
-		log.Fatalf("Error getting value from Redis: %v", err)
-	}
-	fmt.Printf("The value of 'key' is: %s\n", val)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	// Optionally, close the connection when your application exits
-	defer rdb.Close()
+	val, err := rdb.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return "", fmt.Errorf("key does not exist: %s", key)
+	} else if err != nil {
+		return "", fmt.Errorf("error getting value from redis: %v", err)
+	}
+	return val, nil
+}
+
+func SetInCache(key, value string, expiration time.Duration) error {
+	if rdb == nil {
+		return fmt.Errorf("redis is not initialized")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := rdb.Set(ctx, key, value, expiration).Err()
+	if err != nil {
+		return fmt.Errorf("error setting value in redis: %v", err)
+	}
+	return nil
 }

@@ -1,10 +1,10 @@
-package notifier
+package email_channel
 
 import (
 	"fmt"
 
 	"github.com/dranonymousnet/eventhorizon/internal/config"
-	email_backend "github.com/dranonymousnet/eventhorizon/internal/notifier/email/backends"
+	email_backend "github.com/dranonymousnet/eventhorizon/internal/channel/email/backends"
 )
 
 func GetEmailSender() email_backend.EmailSender {
@@ -19,7 +19,7 @@ func GetEmailSender() email_backend.EmailSender {
 }
 
 //TODO Add Logging
-func SendEmail(email email_backend.Email) error {
+func SendEmail(email *email_backend.Email) error {
 	sender := GetEmailSender()
 	return sender.SendEmail(email)
 }

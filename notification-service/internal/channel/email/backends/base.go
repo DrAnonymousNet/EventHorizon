@@ -31,21 +31,22 @@ func (e *Email) AddAttachment(attachmentPath string) error {
 	return nil
 }
 
-func NewEmail(from string, to []string, subject string, cc []string, bcc []string, body string, attachments []map[string][]byte) *Email {
+func NewEmail(from string, to []string, subject string,  body string,  cc []string, bcc []string, ) *Email {
 	if len(from) == 0 {
 		from = config.AppSetting.FromEmail
 	}
+	//attachments []map[string][]byte
 	return &Email{
 		From:        from,
 		To:          to,
 		Subject:     subject,
 		Body:        body,
 		Cc:          cc,
-		Attachments: attachments,
+		//Attachments: attachments,
 	}
 }
 
 type EmailSender interface {
-	SendEmail(Email) error
+	SendEmail(*Email) error
 	SendEmailWithAttachment(Email) error
 }
